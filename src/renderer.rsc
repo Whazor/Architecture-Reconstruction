@@ -2,6 +2,7 @@ module renderer
 
 import IO;
 import \OSType;
+import util::ShellExec;
 
 void open(str output) {
 
