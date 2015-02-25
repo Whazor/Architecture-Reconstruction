@@ -3,6 +3,7 @@
 	<name>Architecture-Reconstruction</name>
 	<comment></comment>
 	<projects>
+		<project>rascal-OFG</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
