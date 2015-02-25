@@ -1,7 +1,7 @@
-module renderer
+module Rendering
 
 import IO;
-import \OSType;
+import \lib::OSType;
 import util::ShellExec;
 
 void open(str output) {

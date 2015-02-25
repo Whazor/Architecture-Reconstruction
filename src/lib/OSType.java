@@ -1,3 +1,5 @@
+package lib;
+
 import org.eclipse.imp.pdb.facts.IString;
 import org.eclipse.imp.pdb.facts.IValueFactory;
 
