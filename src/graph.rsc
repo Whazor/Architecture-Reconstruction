@@ -9,6 +9,28 @@ import lang::java::m3::TypeHierarchy;
 import IO;
 import util::ShellExec;
 import renderer;
+import Set;
+
+str printClass(M3 m, loc cl) {
+
+
+	return cl.file + "\\l|" + "<for(ml <- methods(m, cl)) {><printMethod(m,ml)>\\l<}>";
+}
+
+str printMethod(M3 m, loc ml) {
+	bool isPrivate = true;
+	bool isPublic = false;
+	for(mo <- m@modifiers[ml]?[]) {
+		visit(mo) { 
+			case \public(): {
+				isPublic = true;
+				isPrivate = false;
+			}
+			case \private(): isPrivate = true;
+		} 
+	}
+	return (isPublic ? "+" : "-") + ml.file;
+}
 
 void hello() {
 	m = createM3FromEclipseProject(|project://eLib|);
@@ -28,13 +50,15 @@ void hello() {
 	       '  edge [ fontname = \"Bitstream Vera Sans\" fontsize = 8 ]
 	       '
 	       ' <for(cl <- classes(m)) {>
-	       ' C<ids[cl]> [ label = \"{<cl.file>}\" ]
+	       ' C<ids[cl]> [ label = \"{<printClass(m, cl)>}\" ]
 	       ' <}>
 	       ' 
 	       ' <for(d <- m@extends) {>
 	       ' C<ids[d.from]> -\> C<ids[d.to]> 
 	       ' <}>
 	       '}";
+	       
+	       
   	open(output);
 	
 }
