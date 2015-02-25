@@ -13,4 +13,12 @@ void open(str output) {
 		createProcess("/usr/bin/open", [homeDir()+"/Desktop/test.pdf"]);
 	}
 	
+	if(os() == "Windows 8") {
+		print(homeDir());
+		writeFile(|file:///| + homeDir() + "/Desktop/test.dot", output);
+		PID pid = createProcess("C:/Program Files (x86)/Graphviz2.38/bin/dot.exe", ["-Tpdf", "-o"+homeDir()+"/Desktop/test.pdf", homeDir()+"/Desktop/test.dot"]);
+		readEntireStream(pid);
+		createProcess("C:/Program Files (x86)/Adobe/Reader 11.0/Reader/AcroRd32.exe", [homeDir()+"/Desktop/test.pdf"]);
+	}
+		
 }
