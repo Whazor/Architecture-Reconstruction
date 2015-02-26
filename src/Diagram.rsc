@@ -12,22 +12,22 @@ import Rendering;
 import Set;
 import List;
 import String;
+import Fields;
 
-str printClass(M3 m, loc cl) {
-	return "\<\<TABLE BORDER=\"0\" CELLPADDING=\"0\" CELLSPACING=\"3\"\>\<TR\>\<TD\>" + cl.file + "\</TD\>\</TR\>"+
-		(size(methods(m, cl)) > 0 ? "\<HR/\>" : "") + "<for(fl <- fields(m, cl)) {>\<TR\>\<TD ALIGN=\"LEFT\"\><printField(m,fl)>\</TD\>\</TR\><}>"+
-		(size(fields(m, cl)) > 0 ? "\<HR/\>" : "") + "<for(ml <- methods(m, cl)) {>\<TR\>\<TD ALIGN=\"LEFT\"\><printMethod(m, ml, true)>\</TD\>\</TR\><}>"+
+str printClass(M3 m, map[loc, str] ft, loc cl) {
+	return "\<\<TABLE BORDER=\"0\" CELLPADDING=\"0\" CELLSPACING=\"3\"\>\<TR\>\<TD\>"+ cl.file + "\</TD\>\</TR\>"+
+		(size(methods(m, cl)) > 0 ? "\<HR/\>" : "") + "<for(fl <- fields(m, cl)) {>\<TR\>\<TD ALIGN=\"LEFT\"\><printField(m,ft,fl)>\</TD\>\</TR\><}>"+
+		(size(fields(m, cl)) > 0 ? "\<HR/\>" : "") + "<for(ml <- methods(m, cl)) {>\<TR\>\<TD ALIGN=\"LEFT\"\><printMethod(m, ft, ml, true)>\</TD\>\</TR\><}>"+
 		"\</TABLE\>\>";
 }
-
 str printInterface(M3 m, loc cl) {
 	return "\<\<TABLE BORDER=\"0\" CELLPADDING=\"0\" CELLSPACING=\"3\"\>\<TR\>\<TD\>" + "&lt;&lt;interface&gt;&gt;\<BR/\>" + cl.file + "\</TD\>\</TR\>"+
 		(size(methods(m, cl)) > 0 ? "\<HR/\>" : "") + "<for(fl <- fields(m, cl)) {>\<TR\>\<TD ALIGN=\"LEFT\"\><printField(m,fl)>\</TD\>\</TR\><}>"+
-		(size(fields(m, cl)) > 0 ? "\<HR/\>" : "") + "<for(ml <- methods(m, cl)) {>\<TR\>\<TD ALIGN=\"LEFT\"\><printMethod(m, ml, false)>\</TD\>\</TR\><}>"+
+		(size(fields(m, cl)) > 0 ? "\<HR/\>" : "") + "<for(ml <- methods(m, cl)) {>\<TR\>\<TD ALIGN=\"LEFT\"\><printMethod(m, ft, ml, false)>\</TD\>\</TR\><}>"+
 		"\</TABLE\>\>";
 }
 
-str printMethod(M3 m, loc ml, bool privatePrio) {
+str printMethod(M3 m, map[loc, str] ft, loc ml, bool privatePrio) {
 	bool isPrivate = privatePrio;
 	bool isProtected = false;
 	bool isPublic = !privatePrio;
@@ -54,32 +54,17 @@ str printMethod(M3 m, loc ml, bool privatePrio) {
 		return "\<u\>" + visibility + ml.file + "\</u\>";
 	}
 		
-	return visibility + ml.file;
+	return visibility + ml.file + ((ml in ft) ? (" : " +ft[ml]) : "");
 }
 
-str printField(M3 m, loc fl) {
+str printField(M3 m, map[loc, str] ft, loc fl) {
 	bool isPrivate = true;
 	bool isProtected = false;
 	bool isPublic = false;
 	bool isStatic = false;
-	//print(fl);
-	//print("  -  ");
-	// test = m@typeDependency[fl];
-	//println((m@typeDependency[fl]).file);
-	//return "["+m@typeDependency[fl].file + "] " + fl.file;
-
+	
 	str fieldName = fl.file;
 	
-	//println(createAstsFromEclipseProject(fl, true));
-	
-	/*
-	for(aa <- m@typeDependency[fl]?[]) {
-		visit(aa) {
-			println(aa);
-		}
-	}
-	*/
-
 	for(field <- m@modifiers[fl]?[]) {
 		visit(field) { 
 			case \public(): {
@@ -101,17 +86,20 @@ str printField(M3 m, loc fl) {
 	visibility = (isPublic ? "+" : (isProtected ? "#" : "-"));
 	
 	if (isStatic){
-		return "\<u\>" + visibility + fieldName + "\</u\>";
+		return "\<u\>" + visibility + fieldName + "\</u\>"  + ((fl in ft) ? (" : " +ft[fl]) : "");
 	}
 	
-	return visibility + fieldName;
+	return visibility + fieldName  + ((fl in ft) ? (" : " +ft[fl]) : "");
 }
+
 
 void hello() {
 	proj = |project://eLib|;
 	m = createM3FromEclipseProject(proj);
-	p = createOFG(proj);
-	ast = createAstsFromEclipseProject(|project://eLib|, false);
+	//p = createOFG(proj);
+	a = createAstsFromEclipseProject(proj, true);
+
+	ft = getFieldTypes(a);
 
 	int i = 0;
 	int id() { i += 1; return i; } // a local function to generate unique id's
@@ -156,17 +144,16 @@ void hello() {
 	       ' <}>"
 	       
 	       // Dependency, class A depends on B {...}
-	       /*
-	       +" edge [ arrowhead = \"empty\", style=dashed, fillcolor=\"\" ]
-	       ' <for(d <- m@extends, d.to in ids) {>
-	       ' C<ids[d.from]> -\> C<ids[d.to]> ;
-	       ' <}>"+
+	       //+" edge [ arrowhead = \"empty\", style=dashed, fillcolor=\"\" ]
+	       //' <for(d <- m@extends, d.to in ids) {>
+	       //' C<ids[d.from]> -\> C<ids[d.to]> ;
+	       //' <}>"
 	       
-	       */
+	       
 	       
 	       // get all classes without packages
 		   +" <for(cl <- classes(m), cl.parent == |java+class:///|) {>
-	       '		C<ids[cl]> [ label = <printClass(m, cl)>, margin = \"0,0\", fillcolor=\"#ffe86d\",style=filled ]
+	       '		C<ids[cl]> [ label = <printClass(m, ft, cl)>, margin = \"0,0\", fillcolor=\"#ffe86d\",style=filled ]
 	       ' <}>"
 	       
 	       // get all interfaces without packages
@@ -185,7 +172,7 @@ void hello() {
 	       '	style=filled
 	       '    
 		   ' 	<for(cl <- classes(m), startsWith(cl.path, pl.path)) {>
-	       '		C<ids[cl]> [ label = <printClass(m, cl)>, margin = \"0,0\", fillcolor=\"#ffe86d\",style=filled ]
+	       '		C<ids[cl]> [ label = <printClass(m, ft, cl)>, margin = \"0,0\", fillcolor=\"#ffe86d\",style=filled ]
 	       '	<}>
 	       ' 	<for(part <- [1..size(drop(1, split("/", pl.path)))]) {>
 	       '		}
