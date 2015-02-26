@@ -14,7 +14,9 @@ import List;
 import String;
 
 str printClass(M3 m, loc cl) {
-	return cl.file + "\\l|" + "<for(ml <- methods(m, cl)) {><printMethod(m,ml)>\\l<}>";
+	return cl.file + "\\l"+
+		"|" + "<for(ml <- methods(m, cl)) {><printMethod(m,ml)>\\l<}>"+
+		"|" + "<for(fl <- fields(m, cl)) {><printField(m, fl)>\\l<}>";
 }
 
 str printMethod(M3 m, loc ml) {
@@ -35,6 +37,11 @@ str printMethod(M3 m, loc ml) {
 	return visibility + ml.file;
 }
 
+str printField(M3 m, loc fl) {
+	//return "["+m@typeDependency[fl].file + "] " + fl.file;
+	return fl.file;
+}
+
 void hello() {
 	proj = |project://eLib|;
 	m = createM3FromEclipseProject(proj);
@@ -51,7 +58,7 @@ void hello() {
 	ids = ( cl : id() | cl <- classes(m) );  // generate a map with id codes
 	pids = ( pl : pid() | pl <- packages(m) );
 	
-	loc combine (list[str] arr) = ( |java+package:///| | it + part | part <- arr );
+	loc combine (list[str] arr) = ( |java+package:///| | it + part | part <- arr ); 
 	
 	output = "digraph classes {
 	       '  fontname = \"Bitstream Vera Sans\"
@@ -60,24 +67,37 @@ void hello() {
 	       '  edge [ fontname = \"Bitstream Vera Sans\" fontsize = 8 ]
 	       '"
 	       
+	       
+	       
 	       // Association/aggregation, class A { B b; }, A -> B
+	       +"
+	       ' <for(tuple[loc field, set[loc] types] dub <- [<ma, m@typeDependency[ma]> | ma <- fields(m)], (false | (it || th.scheme == "java+class" && (!startsWith(th.path, "/java"))) | th <- dub.types)) {>
+	       '   <for(dto <- dub.types, dto in classes(m)) {>
+	       ' 	C<ids[|java+class:///| + dub.field.parent.path]> -\> C<ids[dto]>
+	       '   <}>
+	       ' <}>
+	       '"
+	       
+	       // Realization, class A implements B {...}
 	       +" edge [ arrowhead = \"vee\", style=dashed, fillcolor=\"\" ]
 	       ' <for(d <- m@implements, d.to in ids && d.to.parent != d.from.parent) {>
 	       ' C<ids[d.from]> -\> C<ids[d.to]> ;
 	       ' <}>
 	       '"
-	       // Generalization,
+	       // Generalization, class A extends B {...}
 	       +" edge [ arrowhead = \"empty\", style=solid, fillcolor=\"\" ]
 	       ' <for(d <- m@extends, d.to in ids) {>
 	       ' C<ids[d.from]> -\> C<ids[d.to]> ;
 	       ' <}>"+
 	       
+	       
+	       
 	       // get all classes without packages
 		   " <for(cl <- classes(m), cl.parent == |java+class:///|) {>
 	       '		C<ids[cl]> [ label = \"{<printClass(m, cl)>}\", fillcolor=\"#ffe86d\",style=filled ]
 	       ' <}>"
-	       // get all packages and classes
 	       
+	       // get all packages and classes
 	       +" <for(pl <- packages(m)) {>
 	       ' 	<for(part <- [1..size(drop(1, split("/", pl.path)))]) {>
 	       '		subgraph cluster<pids[combine( take(part, drop(1, split("/", pl.path))) )]> {
