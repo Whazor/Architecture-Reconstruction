@@ -14,9 +14,10 @@ import List;
 import String;
 
 str printClass(M3 m, loc cl) {
-	return cl.file + "\\l"+
-		"|" + "<for(ml <- methods(m, cl)) {><printMethod(m,ml)>\\l<}>"+
-		"|" + "<for(fl <- fields(m, cl)) {><printField(m, fl)>\\l<}>";
+	return "\<\<TABLE BORDER=\"0\" CELLPADDING=\"0\" CELLSPACING=\"3\"\>\<TR\>\<TD\>"+ cl.file + "\</TD\>\</TR\>"+
+		(size(methods(m, cl)) > 0 ? "\<HR/\>" : "") + "<for(ml <- methods(m, cl)) {>\<TR\>\<TD ALIGN=\"LEFT\"\><printMethod(m,ml)>\</TD\>\</TR\><}>"+
+		(size(fields(m, cl)) > 0 ? "\<HR/\>" : "") + "<for(fl <- fields(m, cl)) {>\<TR\>\<TD ALIGN=\"LEFT\"\><printField(m, fl)>\</TD\>\</TR\><}>"+
+		"\</TABLE\>\>";
 }
 
 str printMethod(M3 m, loc ml) {
@@ -59,6 +60,7 @@ str printField(M3 m, loc fl) {
 	// test = m@typeDependency[fl];
 	//println((m@typeDependency[fl]).file);
 	//return "["+m@typeDependency[fl].file + "] " + fl.file;
+<<<<<<< HEAD
 	str fieldName = fl.file;
 	
 	println(m@modifiers[fl]);
@@ -88,6 +90,10 @@ str printField(M3 m, loc fl) {
 	}
 	
 	return visibility + fieldName;
+=======
+	
+	return "<fl.file>";
+>>>>>>> origin/master
 }
 
 void hello() {
@@ -138,7 +144,7 @@ void hello() {
 	       
 	       // get all classes without packages
 		   " <for(cl <- classes(m), cl.parent == |java+class:///|) {>
-	       '		C<ids[cl]> [ label = \"{<printClass(m, cl)>}\", fillcolor=\"#ffe86d\",style=filled ]
+	       '		C<ids[cl]> [ label = <printClass(m, cl)>, margin = \"0,0\", fillcolor=\"#ffe86d\",style=filled ]
 	       ' <}>"
 	       
 	       // get all packages and classes
@@ -152,7 +158,7 @@ void hello() {
 	       '	style=filled
 	       '    
 		   ' 	<for(cl <- classes(m), startsWith(cl.path, pl.path)) {>
-	       '		C<ids[cl]> [ label = \"{<printClass(m, cl)>}\", fillcolor=\"#ffe86d\",style=filled ]
+	       '		C<ids[cl]> [ label = <printClass(m, cl)>, margin = \"0,0\", fillcolor=\"#ffe86d\",style=filled ]
 	       '	<}>
 	       ' 	<for(part <- [1..size(drop(1, split("/", pl.path)))]) {>
 	       '		}
