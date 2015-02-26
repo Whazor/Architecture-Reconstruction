@@ -14,7 +14,6 @@ void open(str output) {
 	}
 	
 	if(os() == "Windows 8") {
-		print(homeDir());
 		writeFile(|file:///| + homeDir() + "/Desktop/test.dot", output);
 		PID pid = createProcess("C:/Program Files (x86)/Graphviz2.38/bin/dot.exe", ["-Tpdf", "-o"+homeDir()+"/Desktop/test.pdf", homeDir()+"/Desktop/test.dot"]);
 		readEntireStream(pid);

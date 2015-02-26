@@ -21,25 +21,73 @@ str printClass(M3 m, loc cl) {
 
 str printMethod(M3 m, loc ml) {
 	bool isPrivate = true;
+	bool isProtected = false;
 	bool isPublic = false;
+	bool isStatic = false;
+	
 	for(mo <- m@modifiers[ml]?[]) {
 		visit(mo) { 
 			case \public(): {
 				isPublic = true;
 				isPrivate = false;
 			}
+			case \protected():  {
+				isProtected = true;
+				isPrivate = false;
+			}
 			case \private(): isPrivate = true;
+			case \static(): isStatic = true;
 		} 
 	}
 	
-	visibility = (isPublic ? "+" : "-");
+	visibility = (isPublic ? "+" : (isProtected ? "#" : "-"));
 	
+	if (isStatic){
+		return "_" + visibility + ml.file + "_";
+	}
+		
 	return visibility + ml.file;
 }
 
 str printField(M3 m, loc fl) {
+	bool isPrivate = true;
+	bool isProtected = false;
+	bool isPublic = false;
+	bool isStatic = false;
+	//print(fl);
+	//print("  -  ");
+	// test = m@typeDependency[fl];
+	//println((m@typeDependency[fl]).file);
 	//return "["+m@typeDependency[fl].file + "] " + fl.file;
-	return fl.file;
+	str fieldName = fl.file;
+	
+	println(m@modifiers[fl]);
+	
+	for(field <- m@modifiers[fl]?[]) {
+		visit(field) { 
+			case \public(): {
+				isPublic = true;
+				isPrivate = false;
+			}
+			case \protected():  {
+				isProtected = true;
+				isPrivate = false;
+			}
+			case \final():  {
+				fieldName = toUpperCase(fieldName);
+			}
+			case \private(): isPrivate = true;
+			case \static(): isStatic = true;
+		} 
+	}
+	
+	visibility = (isPublic ? "+" : (isProtected ? "#" : "-"));
+	
+	if (isStatic){
+		return "_" + visibility + fieldName + "_";
+	}
+	
+	return visibility + fieldName;
 }
 
 void hello() {
@@ -61,13 +109,11 @@ void hello() {
 	loc combine (list[str] arr) = ( |java+package:///| | it + part | part <- arr ); 
 	
 	output = "digraph classes {
-	       '  fontname = \"Bitstream Vera Sans\"
+	       '  fontname = \"Arial\"
 	       '  fontsize = 8
 	       '  node [ fontname = \"Bitstream Vera Sans\" fontsize = 8 shape = \"record\" ]
 	       '  edge [ fontname = \"Bitstream Vera Sans\" fontsize = 8 ]
-	       '"
-	       
-	       
+	       '"	       
 	       
 	       // Association/aggregation, class A { B b; }, A -> B
 	       +"
@@ -89,8 +135,6 @@ void hello() {
 	       ' <for(d <- m@extends, d.to in ids) {>
 	       ' C<ids[d.from]> -\> C<ids[d.to]> ;
 	       ' <}>"+
-	       
-	       
 	       
 	       // get all classes without packages
 		   " <for(cl <- classes(m), cl.parent == |java+class:///|) {>
