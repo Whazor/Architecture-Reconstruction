@@ -15,8 +15,8 @@ import String;
 
 str printClass(M3 m, loc cl) {
 	return "\<\<TABLE BORDER=\"0\" CELLPADDING=\"0\" CELLSPACING=\"3\"\>\<TR\>\<TD\>"+ cl.file + "\</TD\>\</TR\>"+
-		(size(methods(m, cl)) > 0 ? "\<HR/\>" : "") + "<for(ml <- methods(m, cl)) {>\<TR\>\<TD ALIGN=\"LEFT\"\><printMethod(m,ml)>\</TD\>\</TR\><}>"+
-		(size(fields(m, cl)) > 0 ? "\<HR/\>" : "") + "<for(fl <- fields(m, cl)) {>\<TR\>\<TD ALIGN=\"LEFT\"\><printField(m, fl)>\</TD\>\</TR\><}>"+
+		(size(methods(m, cl)) > 0 ? "\<HR/\>" : "") + "<for(fl <- fields(m, cl)) {>\<TR\>\<TD ALIGN=\"LEFT\"\><printField(m,fl)>\</TD\>\</TR\><}>"+
+		(size(fields(m, cl)) > 0 ? "\<HR/\>" : "") + "<for(ml <- methods(m, cl)) {>\<TR\>\<TD ALIGN=\"LEFT\"\><printMethod(m, ml)>\</TD\>\</TR\><}>"+
 		"\</TABLE\>\>";
 }
 
@@ -44,7 +44,7 @@ str printMethod(M3 m, loc ml) {
 	visibility = (isPublic ? "+" : (isProtected ? "#" : "-"));
 	
 	if (isStatic){
-		return "_" + visibility + ml.file + "_";
+		return "\<u\>" + visibility + ml.file + "\</u\>";
 	}
 		
 	return visibility + ml.file;
@@ -60,10 +60,19 @@ str printField(M3 m, loc fl) {
 	// test = m@typeDependency[fl];
 	//println((m@typeDependency[fl]).file);
 	//return "["+m@typeDependency[fl].file + "] " + fl.file;
-<<<<<<< HEAD
+
 	str fieldName = fl.file;
 	
-	println(m@modifiers[fl]);
+	/*
+	for(aa <- m@typeDependency[fl]?[]) {
+		visit(aa) {
+			println(aa);
+		}
+	}
+	*/
+	println(fl);
+	print("-  ");
+	println(m@typeDependency[fl]);
 	
 	for(field <- m@modifiers[fl]?[]) {
 		visit(field) { 
@@ -86,14 +95,10 @@ str printField(M3 m, loc fl) {
 	visibility = (isPublic ? "+" : (isProtected ? "#" : "-"));
 	
 	if (isStatic){
-		return "_" + visibility + fieldName + "_";
+		return "\<u\>" + visibility + fieldName + "\</u\>";
 	}
 	
 	return visibility + fieldName;
-=======
-	
-	return "<fl.file>";
->>>>>>> origin/master
 }
 
 void hello() {
