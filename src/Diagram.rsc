@@ -20,7 +20,7 @@ str printClass(M3 m, map[loc, str] ft, loc cl) {
 		(size(fields(m, cl)) > 0 ? "\<HR/\>" : "") + "<for(ml <- methods(m, cl)) {>\<TR\>\<TD ALIGN=\"LEFT\"\><printMethod(m, ft, ml, true)>\</TD\>\</TR\><}>"+
 		"\</TABLE\>\>";
 }
-str printInterface(M3 m, loc cl) {
+str printInterface(M3 m, map[loc, str] ft, loc cl) {
 	return "\<\<TABLE BORDER=\"0\" CELLPADDING=\"0\" CELLSPACING=\"3\"\>\<TR\>\<TD\>" + "&lt;&lt;interface&gt;&gt;\<BR/\>" + cl.file + "\</TD\>\</TR\>"+
 		(size(methods(m, cl)) > 0 ? "\<HR/\>" : "") + "<for(fl <- fields(m, cl)) {>\<TR\>\<TD ALIGN=\"LEFT\"\><printField(m,fl)>\</TD\>\</TR\><}>"+
 		(size(fields(m, cl)) > 0 ? "\<HR/\>" : "") + "<for(ml <- methods(m, cl)) {>\<TR\>\<TD ALIGN=\"LEFT\"\><printMethod(m, ft, ml, false)>\</TD\>\</TR\><}>"+
@@ -158,7 +158,7 @@ void hello() {
 	       
 	       // get all interfaces without packages
 		   +" <for(cl <- interfaces(m), cl.parent == |java+interface:///|) {>
-	       '		C<ids[cl]> [ label = <printInterface(m, cl)>, margin = \"0,0\", fillcolor=\"#ffe86d\",style=filled ]
+	       '		C<ids[cl]> [ label = <printInterface(m, ft, cl)>, margin = \"0,0\", fillcolor=\"#ffe86d\",style=filled ]
 	       ' <}>"
 	       
 	       // get all packages and classes
