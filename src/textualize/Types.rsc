@@ -1,4 +1,4 @@
-module Fields
+module textualize::Types
 
 import lang::java::jdt::m3::Core; 
 import lang::java::jdt::m3::AST;
@@ -9,7 +9,7 @@ import lang::java::m3::TypeHierarchy;
 
 import IO;
 
-public map[loc, str] getFieldTypes(set[Declaration] decs) {
+public map[loc, str] getAllTypes(set[Declaration] decs) {
 	map[loc, str] blaat = ();
 	visit(decs) {
      	case \field(Type \type, list[Expression] fragments):{
