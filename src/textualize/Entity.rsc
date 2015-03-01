@@ -11,7 +11,7 @@ import List;
 //
 
 bool sortLocs(loc a, loc b) {
-	return a.file > b.file;
+	return a.file < b.file;
 }
 
 str printClass(M3 m, map[loc, str] ft, loc cl) {
