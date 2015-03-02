@@ -1,0 +1,84 @@
+%
+% TU/e Style Master Thesis template for LaTeX
+%
+% Public version 1.0
+%
+% THIS IS THE MAIN FILE (i.e. compile this file, compiling the others directly won't work)%
+\documentclass[a4paper,10pt,twoside]{report}
+
+%all the other includes etc. are done in the report.sty file.
+\usepackage{report}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{enumitem}
+
+\usepackage{svg}
+\usepackage{tabularx}
+\usepackage{tikz}
+
+%
+% These commands need to be defined in order to produce a correct and personalized document
+%
+\newcommand{\coursecode}{2IS55}
+\newcommand{\coursename}{Software Evolution}
+\newcommand{\shortdoctitle}{\coursecode - \coursename}
+\newcommand{\doctitle}{\coursecode\hspace{2mm}-\hspace{2mm}\coursename}
+\newcommand\NextYear{\advance\year by 1 \the\year\advance\year by -1}
+\newcommand{\docsubtitle}{Assignment 2 (\the\year\hspace{2mm}-\hspace{2mm}\NextYear) }
+
+\newcommand{\me}{Luuk van Hulten (0720248) \\ Nanne Wielinga (0852473)}
+\newcommand{\keywords}{\coursecode, \coursename}
+\newcommand{\version}{Version 1.0}
+\newcommand{\monthYear}{ \today }
+
+%Be sure to use all the titles for your committee members!!! (their names show up on the very first page!)
+%\newcommand{\firstCommitteeMember}{Your First Committee Member}
+%\newcommand{\secondCommitteeMember}{Your second Committee Member, usually the daily supervisor}
+%\newcommand{\thirdCommitteeMember}{Your Third Committee Member, usually the external member}
+
+\author{\me}
+
+%
+% PDF settings
+%
+\hypersetup
+{
+    pdfauthor={\me},
+    pdftitle={\shortdoctitle},
+    pdfsubject={\doctitle},
+    pdfkeywords={\keywords}
+}
+
+\begin{document}
+
+%use this include for PDF and distribution versions
+\pagenumbering{roman}
+\include{titlepage}
+
+\normalsize
+
+\tableofcontents
+
+\setcounter{page}{2}
+\pagenumbering{arabic}
+
+
+\chapter{Introduction}\label{chapter:Introduction}
+\input{chapters/introduction}
+
+\chapter{Input and Output Language}\label{chapter:Input and Output Language}
+\input{chapters/inputoutput}
+
+\chapter{The tool chain}\label{chapter:The tool chain}
+\input{chapters/toolchain}
+
+\chapter{Apply the tool chain}\label{chapter:Apply the tool chain}
+\input{chapters/applythetoolchain}
+
+\chapter{Discussion}\label{chapter:Discussion}
+\input{chapters/discussion}
+
+\chapter{Conclusion}\label{chapter:Conclusion}
+\input{chapters/conclusion}
+
+\end{document}

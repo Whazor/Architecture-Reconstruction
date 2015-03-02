@@ -1,0 +1,28 @@
+In this section the input and output languages of the tool is discussed. For each feature it is indicated if it's supported, partly supported or unsupported.
+
+\section{Input}
+Many java features are supported by rascal. The following standard functionality is supported by the tool chain: class names, (static) fields, method signatures. Since this information indicates the structure of the classes.
+Also associations, generalisations, realisations and
+dependencies are supported. Using this information the relations between classes can be extracted. These relations can be used to identify packages, redundant classes and so on.
+
+\subsection*{Inner classes}
+Inner classes are classes that are contained within an other class. Inner classes are partly supported since they will be identified as normal classes by the tool. However by doing so the inner class access modifiers is lost.
+
+\subsection*{Generics}
+A generic type is a generic class or interface that is parameterized over types.
+Are generic types supported?
+
+\newpage
+
+\section{Output}
+The output language of the tool is a class diagram conform UML v2.0. The class diagram is generated using the graphviz dot language. We chose to export the class diagram as an svg image since this appeared to support more functionality like underlining and didn't want the visual component to be the bottleneck of the tool.
+
+\subsection*{Packages}
+A package is a mechanism for organizing classes into namespaces. Packages are often used in modular programming.  Programmers also typically use packages to organize classes belonging to the same category or providing similar functionality. In the tool packages are supported. The support for packages is added since in larger projects these packages give a better overview of the project.
+
+\subsection*{Named association}
+In the tool chain we did not support named associations since this information is not explicit contained within the JAVA language. Hence named associations could only be implied by variable/method names. This makes the functionality unreliable between different projects and why it's better not to support it. However these patterns can still be observed from the class diagram.
+
+\subsection*{Multiplicity}
+Multiplicity is also not supported by the application. For multiplicity support the control flow of the application has to be known. This control flow can only observed while running the application.
+
