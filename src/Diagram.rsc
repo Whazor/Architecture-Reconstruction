@@ -8,10 +8,12 @@ import lang::java::m3::TypeHierarchy;
 
 import String;
 import List;
+import Relations;
 
 import Rendering;
 import textualize::Types;
 import textualize::Entity;
+import relations::dependencies;
 
 void construct() {
 	proj = |project://eLib|;
@@ -31,6 +33,8 @@ void construct() {
 	
 	// put all the types in a map
 	ft = getAllTypes(a);
+	rs = relations(p);
+	rel[loc from, loc to] dependencies = {<c, x.to> | x <- rs, c <- classes(m), startsWith(x.from.path, c.path) };
 	
 	loc combine (list[str] arr) = ( |java+package:///| | it + part | part <- arr ); 
 	
@@ -64,10 +68,10 @@ void construct() {
 	       ' <}>"
 	       
 	       // Dependency, class A depends on B {...}
-	       //+" edge [ arrowhead = \"empty\", style=dashed, fillcolor=\"\" ]
-	       //' <for(d <- m@extends, d.to in ids) {>
-	       //' E<ids[d.from]> -\> E<ids[d.to]> ;
-	       //' <}>"
+	       +" edge [ arrowhead = \"empty\", style=dashed, fillcolor=\"\" ]
+	       ' <for(d <- dependencies, d.to in ids) {>
+	       ' E<ids[d.from]> -\> E<ids[d.to]> ;
+	       ' <}>"
 	       
 	       // get all classes without packages
 		   +" <for(cl <- classes(m), cl.parent == |java+class:///|) {>
