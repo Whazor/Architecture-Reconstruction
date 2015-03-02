@@ -35,11 +35,13 @@ OFG relations(Program pro) {
 	ofg = buildGraph(pro);
 	
 	gen = {<edge.target, edge.class> | edge:newAssign(target, class, _, _) <- pro.statements};
-	
 	return prop(ofg, gen, {}, true);
+	
+	//gen = {<edge.target, edge.class> | edge:newAssign(target, class, _, _) <- pro.statements};
+	//return prop(ofg, gen, {}, false);
 }
 
-//
+
 //void relations(Program pro) {
 //
 //	//set[loc] succ_ (loc bla) = {

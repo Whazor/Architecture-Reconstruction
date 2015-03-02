@@ -8,6 +8,7 @@ import lang::java::m3::TypeHierarchy;
 
 import String;
 import List;
+import Set;
 import Relations;
 
 import Rendering;
@@ -34,7 +35,14 @@ void construct() {
 	// put all the types in a map
 	ft = getAllTypes(a);
 	rs = relations(p);
-	rel[loc from, loc to] dependencies = {<c, x.to> | x <- rs, c <- classes(m), startsWith(x.from.path, c.path) };
+	
+	
+	rel[loc from, loc to] implements = m@implements;
+	rel[loc from, loc to] extends = m@extends;
+	rel[loc from, loc to] association = { <c, t> | c <- classes(m), fi <- fields(m, c), t <- m@typeDependency[fi], t in ids } - extends - implements;
+	rel[loc from, loc to] dependencies = {<c, getOneFrom(m@extends[x.to]) ? x.to> | x <- rs, c <- classes(m), startsWith(x.from.path, c.path) } - association - extends - implements;
+	
+	
 	
 	loc combine (list[str] arr) = ( |java+package:///| | it + part | part <- arr ); 
 	
@@ -46,30 +54,28 @@ void construct() {
 	       '"	       
 	       
 	       // Association/aggregation, class A { B b; }, A -> B
-	       +"
-	       ' <for(tuple[loc field, set[loc] types] dub <- [<ma, m@typeDependency[ma]> | ma <- fields(m)], (false | (it || th.scheme == "java+class" && (!startsWith(th.path, "/java"))) | th <- dub.types)) {>
-	       '   <for(dto <- dub.types, dto in (classes(m) )) {>
-	       ' 	E<ids[|java+class:///| + dub.field.parent.path]> -\> E<ids[dto]>
-	       '   <}>
-	       ' <}>
+	       +"edge [ arrowhead = \"vee\", style=solid, fillcolor=\"\" ]
+	       '<for(d <- association, d.to in ids, d.from != d.to) {>
+	       'E<ids[d.from]> -\> E<ids[d.to]>
+	       '<}>
 	       '"
 	       
 	       // Realization, class A implements B {...}
-	       +" edge [ arrowhead = \"vee\", style=dashed, fillcolor=\"\" ]
-	       ' <for(d <- m@implements, d.to in ids) {>
+	       +" edge [ arrowhead = \"empty\", style=dashed, fillcolor=\"\" ]
+	       ' <for(d <- implements, d.to in ids, d.from != d.to) {>
 	       ' E<ids[d.from]> -\> E<ids[d.to]> ;
 	       ' <}>
 	       '"
 	       
 	       // Generalization, class A extends B {...}
 	       +" edge [ arrowhead = \"empty\", style=solid, fillcolor=\"\" ]
-	       ' <for(d <- m@extends, d.to in ids) {>
+	       ' <for(d <- extends, d.to in ids, d.from != d.to) {>
 	       ' E<ids[d.from]> -\> E<ids[d.to]> ;
 	       ' <}>"
 	       
 	       // Dependency, class A depends on B {...}
-	       +" edge [ arrowhead = \"empty\", style=dashed, fillcolor=\"\" ]
-	       ' <for(d <- dependencies, d.to in ids) {>
+	       +" edge [ arrowhead = \"vee\", style=dashed, fillcolor=\"\" ]
+	       ' <for(d <- dependencies, d.to in ids, d.from != d.to) {>
 	       ' E<ids[d.from]> -\> E<ids[d.to]> ;
 	       ' <}>"
 	       
