@@ -17,6 +17,8 @@ bool sortLocs(loc a, loc b) {
 str printClass(M3 m, map[loc, str] ft, loc cl) {
 	return "\<\<TABLE BORDER=\"0\" CELLPADDING=\"0\" CELLSPACING=\"3\"\>
 		   	'\<TR\>\<TD\><cl.file>\</TD\>\</TR\>
+		   	'\</TABLE\>\>";
+		   	/*
 			'
 			'<(size(methods(m, cl)) > 0 ? "\<HR/\>" : "")>
 			'<for(fl <- sort(fields(m, cl), sortLocs)) {>
@@ -27,11 +29,12 @@ str printClass(M3 m, map[loc, str] ft, loc cl) {
 			'<for(ml <- sort(methods(m, cl), sortLocs)) {>
 			'   \<TR\>\<TD ALIGN=\"LEFT\"\><printMethod(m, ft, ml, true)>\</TD\>\</TR\>
 			'<}>
-			'\</TABLE\>\>";
+			'\</TABLE\>\>";*/
 }
 str printInterface(M3 m, map[loc, str] ft, loc cl) {
 	return "\<\<TABLE BORDER=\"0\" CELLPADDING=\"0\" CELLSPACING=\"3\"\>
-			'\<TR\>\<TD\>interface\<BR/\><cl.file>\</TD\>\</TR\>
+			'\<TR\>\<TD\>&lt;&lt;interface&gt;&gt;\<BR/\><cl.file>\</TD\>\</TR\>
+			'\</TABLE\>\>";/*
 			'
 			'<(size(methods(m, cl)) > 0 ? "\<HR/\>" : "")>
 			'<for(fl <- sort(fields(m, cl), sortLocs)) {>
@@ -42,5 +45,5 @@ str printInterface(M3 m, map[loc, str] ft, loc cl) {
 			'<for(ml <- sort(methods(m, cl), sortLocs)) {>
 			'   \<TR\>\<TD ALIGN=\"LEFT\"\><printMethod(m, ft, ml, false)>\</TD\>\</TR\>
 			'<}>
-			'\</TABLE\>\>";
+			'\</TABLE\>\>";*/
 }

@@ -17,7 +17,7 @@ import textualize::Entity;
 import relations::dependencies;
 
 void construct() {
-	proj = |project://eLib|;
+	proj = |project://nekohtml-0.9.5|;
 	m = createM3FromEclipseProject(proj);
 	p = createOFG(proj);
 	a = createAstsFromEclipseProject(proj, true);
@@ -36,11 +36,18 @@ void construct() {
 	ft = getAllTypes(a);
 	rs = relations(p);
 	
+	loc getParent(loc child) = {
+		if(child in m@extends && getOneFrom(m@extends[child]) in ids) {
+			return getOneFrom(m@extends[child]);
+		} else {
+			return child;
+		}
+	};
 	
 	rel[loc from, loc to] implements = m@implements;
 	rel[loc from, loc to] extends = m@extends;
 	rel[loc from, loc to] association = { <c, t> | c <- classes(m), fi <- fields(m, c), t <- m@typeDependency[fi], t in ids } - extends - implements;
-	rel[loc from, loc to] dependencies = {<c, getOneFrom(m@extends[x.to]) ? x.to> | x <- rs, c <- classes(m), startsWith(x.from.path, c.path) } - association - extends - implements;
+	rel[loc from, loc to] dependencies = {<c, getParent(x.to)> | x <- rs, c <- classes(m), startsWith(x.from.path, c.path) } - association - extends - implements;
 	
 	
 	
